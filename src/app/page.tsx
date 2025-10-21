@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { BookOpen, Sparkles, Clock, GraduationCap } from "lucide-react";
+import { generateLessonPlan, getLessonPlans } from "@/api/lessonPlan";
+import { LessonPlanRequest } from "@/types/ILessonPlanResponse";
+import LessonPlanCard from "@/components/Cards";
 
 export default function LessonPlanGenerator() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<LessonPlanRequest>({
     topic: "",
     grade_level: "",
     subject: "",
     learning_context: "",
-    duration_minutes: 50,
+    duration_minutes: "50",
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedPlan, setGeneratedPlan] = useState(null);
 
   const gradeLevels = [
     "Educação Infantil",
@@ -47,7 +49,7 @@ export default function LessonPlanGenerator() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "duration_minutes" ? parseInt(value) || 0 : value,
+      [name]: value,
     }));
   };
 
@@ -55,42 +57,12 @@ export default function LessonPlanGenerator() {
     e.preventDefault();
     setIsGenerating(true);
 
-    document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    // document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 
     try {
-      // Simulação de resposta para demonstração
-      // Substitua isso pela sua chamada real à API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await generateLessonPlan(formData);
 
-      setGeneratedPlan({
-        ludic_introduction:
-          "Uma introdução lúdica e envolvente sobre o tema escolhido, conectando com a realidade dos alunos.",
-        bncc_goal:
-          "Objetivo alinhado com a BNCC para a série e disciplina selecionadas.",
-        step_by_step: [
-          {
-            etapa: "Aquecimento",
-            tempo: "10 min",
-            descricao: "Atividade inicial para engajar os alunos no tema.",
-          },
-          {
-            etapa: "Desenvolvimento",
-            tempo: "25 min",
-            descricao: "Exploração prática e teórica do conteúdo principal.",
-          },
-          {
-            etapa: "Fechamento",
-            tempo: "15 min",
-            descricao: "Consolidação do aprendizado e avaliação.",
-          },
-        ],
-        rubric_evaluation: {
-          excelente: "Demonstra completo domínio do conteúdo",
-          bom: "Compreende os conceitos principais",
-          satisfatorio: "Compreensão básica do conteúdo",
-          em_desenvolvimento: "Necessita de apoio adicional",
-        },
-      });
+      window.location.reload();
     } catch (error) {
       console.error("Erro ao gerar plano:", error);
       alert("Erro ao gerar o plano de aula. Tente novamente.");
@@ -229,83 +201,7 @@ export default function LessonPlanGenerator() {
           </div>
         </form>
 
-        {generatedPlan && (
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800 border-b pb-4">
-              Plano de Aula Gerado
-            </h2>
-
-            <div className="bg-purple-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-purple-800 mb-3">
-                🎭 Introdução Lúdica
-              </h3>
-              <p className="text-gray-700">
-                {generatedPlan.ludic_introduction}
-              </p>
-            </div>
-
-            <div className="bg-blue-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-blue-800 mb-3">
-                🎯 Objetivo de Aprendizagem (BNCC)
-              </h3>
-              <p className="text-gray-700">{generatedPlan.bncc_goal}</p>
-            </div>
-
-            <div className="bg-green-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-green-800 mb-4">
-                📋 Passo a Passo da Atividade
-              </h3>
-              <div className="space-y-4">
-                {generatedPlan.step_by_step.map((step, index) => (
-                  <div
-                    key={index}
-                    className="bg-white rounded-lg p-4 border-l-4 border-green-500"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-800">
-                        {index + 1}. {step.etapa}
-                      </h4>
-                      <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                        {step.tempo}
-                      </span>
-                    </div>
-                    <p className="text-gray-700">{step.descricao}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-orange-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-orange-800 mb-4">
-                ⭐ Rubrica de Avaliação
-              </h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {Object.entries(generatedPlan.rubric_evaluation).map(
-                  ([nivel, descricao]) => (
-                    <div
-                      key={nivel}
-                      className="bg-white rounded-lg p-4 border border-orange-200"
-                    >
-                      <h4 className="font-semibold text-gray-800 mb-2 capitalize">
-                        {nivel.replace("_", " ")}
-                      </h4>
-                      <p className="text-sm text-gray-700">{descricao}</p>
-                    </div>
-                  ),
-                )}
-              </div>
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <button className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
-                💾 Salvar Plano
-              </button>
-              <button className="flex-1 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition">
-                📄 Exportar PDF
-              </button>
-            </div>
-          </div>
-        )}
+        <LessonPlanCard />
       </div>
     </div>
   );

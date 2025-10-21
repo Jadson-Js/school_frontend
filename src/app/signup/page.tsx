@@ -3,7 +3,6 @@
 import React from "react";
 // 1. MUDANÇA: Importei o UserPlus para o ícone
 import { Eye, EyeOff, Mail, Lock, UserPlus, User } from "lucide-react";
-import { supabase } from "../../services/supabase/Client"; // Ajuste o caminho se necessário
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signup } from "@/api/auth";

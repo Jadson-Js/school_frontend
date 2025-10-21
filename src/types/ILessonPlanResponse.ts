@@ -1,3 +1,11 @@
+export interface LessonPlanRequest {
+  topic: string;
+  grade_level: string;
+  subject: string;
+  learning_context: string | null;
+  duration_minutes: string | null;
+}
+
 export interface LessonPlanResponse {
   success: boolean;
   lesson_plan_id: {
