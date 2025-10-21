@@ -12,7 +12,7 @@ export const signup = async (email: string, password: string) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apiKey: API_KEY,
+        apiKey: API_KEY!,
       },
       body,
     });
@@ -41,7 +41,7 @@ export const login = async (email: string, password: string) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apiKey: API_KEY,
+          apiKey: API_KEY!,
         },
         body,
       },

@@ -59,18 +59,21 @@ export default function SignUpPage() {
       setEmail("");
       setPassword("");
       setValidationErrors({});
-    } catch (err: any) {
-      setApiError(
-        err.message ||
-          "Não foi possível realizar o cadastro. Tente novamente mais tarde.",
-      );
+    } catch (err) {
+      let errorMessage = "Ocorreu um erro desconhecido.";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      setApiError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-blue-50 to-indigo-100 p-4 font-sans">
       <div className="w-full max-w-md">
         <form
           onSubmit={handleSubmit}

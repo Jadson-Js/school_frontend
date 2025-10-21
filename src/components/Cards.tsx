@@ -24,6 +24,10 @@ interface LessonPlan {
   rubric_evaluation: RubricEvaluation;
 }
 
+interface LessonResponse {
+  generated_content: string;
+}
+
 // --- COMPONENTES AUXILIARES ---
 
 /**
@@ -140,9 +144,6 @@ const RubricItem: React.FC<RubricItemProps> = ({
   );
 };
 
-/**
- * Exibe o modal com os detalhes do plano de aula
- */
 interface LessonPlanDetailModalProps {
   lesson: LessonPlan;
   onClose: () => void;
@@ -154,7 +155,6 @@ const LessonPlanDetailModal: React.FC<LessonPlanDetailModalProps> = ({
 }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
     <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-      {/* Header */}
       <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-start">
         <h2 className="text-2xl font-bold text-gray-800">
           Plano de Aula Detalhado
@@ -167,7 +167,6 @@ const LessonPlanDetailModal: React.FC<LessonPlanDetailModalProps> = ({
         </button>
       </div>
 
-      {/* Content */}
       <div className="p-6 space-y-6">
         <ModalSection
           title="Introdução Lúdica"
@@ -271,8 +270,6 @@ const LessonPlanDetailModal: React.FC<LessonPlanDetailModalProps> = ({
   </div>
 );
 
-// --- COMPONENTE PRINCIPAL ---
-
 export default function LessonPlanCard() {
   const [selectedLesson, setSelectedLesson] = useState<LessonPlan | null>(null);
   const [lessons, setLessons] = useState<LessonPlan[]>([]);
@@ -282,25 +279,43 @@ export default function LessonPlanCard() {
     const fetchLessons = async () => {
       try {
         const data = await getLessonPlans();
+
         const formatedLessons = data
-          .map((item) => {
+          .map((item: unknown) => {
+            if (
+              typeof item !== "object" ||
+              item === null ||
+              !("generated_content" in item)
+            ) {
+              console.error(
+                "Item recebido não tem o formato esperado (sem 'generated_content'):",
+                item,
+              );
+              return null;
+            }
+
+            const content = (item as LessonResponse).generated_content;
+
+            if (typeof content !== "string") {
+              console.error("O 'generated_content' não é uma string:", item);
+              return null;
+            }
+
             try {
-              // Parse individualmente para evitar que um erro quebre todo o map
-              return JSON.parse(item.generated_content);
+              return JSON.parse(content);
             } catch (parseError) {
               console.error(
                 "Erro ao parsear o JSON de um plano de aula:",
                 parseError,
                 item,
               );
-              return null; // Retorna null para planos com erro
+              return null;
             }
           })
-          .filter(Boolean); // Filtra os planos que falharam no parse (null)
+          .filter(Boolean);
 
         setLessons(formatedLessons as LessonPlan[]);
       } catch (error) {
-        // Seu console.error já estava em português, o que é ótimo!
         console.error("Erro ao carregar planos de aula:", error);
       } finally {
         setIsLoading(false);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { login } from "@/api/auth";
 
@@ -9,9 +9,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("admin123");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
@@ -20,7 +20,13 @@ export default function LoginPage() {
       const data = await login(email, password);
       console.log("Login bem-sucedido!", data);
     } catch (err) {
-      setError(err.message || "Ocorreu um erro desconhecido.");
+      let errorMessage = "Ocorreu um erro desconhecido.";
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

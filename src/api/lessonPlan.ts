@@ -19,7 +19,7 @@ export const generateLessonPlan = async (
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          apiKey: API_KEY,
+          apiKey: API_KEY!,
           Authorization: "Bearer " + getCookie("access_token"),
         },
         body,
@@ -48,7 +48,7 @@ export const getLessonPlans = async () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        apiKey: API_KEY,
+        apiKey: API_KEY!,
         Authorization: "Bearer " + getCookie("access_token"),
       },
     });

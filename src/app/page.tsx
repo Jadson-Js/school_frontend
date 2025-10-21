@@ -159,7 +159,7 @@ export default function LessonPlanGenerator() {
               <input
                 type="number"
                 name="duration_minutes"
-                value={formData.duration_minutes}
+                value={formData.duration_minutes || ""}
                 onChange={handleChange}
                 min="15"
                 max="180"
@@ -174,7 +174,7 @@ export default function LessonPlanGenerator() {
               </label>
               <textarea
                 name="learning_context"
-                value={formData.learning_context}
+                value={formData.learning_context || ""}
                 onChange={handleChange}
                 rows={4}
                 placeholder="Descreva o perfil da turma, conhecimentos prévios, recursos disponíveis, necessidades especiais..."
