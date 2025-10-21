@@ -5,52 +5,32 @@ import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 // 1. Importe o seu cliente Supabase
 import { useRouter } from "next/navigation"; // (Se estiver usando Next.js 13+ App Router)
 import Link from "next/link";
-import { createBrowserClient } from "@supabase/ssr";
+import { login } from "@/api/auth";
 
 export default function LoginPage() {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = React.useState("jadson20051965@gmail.com");
+  const [password, setPassword] = React.useState("admin123");
   const [showPassword, setShowPassword] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   // 2. Adicione um estado para erros
   const [error, setError] = React.useState<string | null>(null);
-
-  // (Opcional, mas recomendado: para redirecionar após o login)
   const router = useRouter();
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-
-  // 3. Atualize a função handleSubmit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setIsLoading(true);
-    setError(null); // Limpa erros anteriores
+    setError(null);
 
-    // Troca o setTimeout pela chamada real do Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    try {
+      // 2. Usa a função limpa da API
+      const data = await login(email, password);
 
-    setIsLoading(false);
-
-    if (error) {
-      // 4. Se der erro, mostre a mensagem
-      if (error.message === "Invalid login credentials") {
-        setError("Email ou senha inválidos.");
-      } else {
-        setError(error.message);
-      }
-    } else {
-      // 5. Se der certo, redirecione o usuário
-      console.log("Login bem-sucedido!", data.user);
-      // Exemplo de redirecionamento com Next.js App Router:
-      router.push("/");
-      router.refresh();
-      // Ou com react-router-dom: navigate('/dashboard');
+      // 3. Sucesso!
+      console.log("Login bem-sucedido!", data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 

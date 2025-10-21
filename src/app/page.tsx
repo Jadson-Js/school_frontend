@@ -5,11 +5,11 @@ import { BookOpen, Sparkles, Clock, GraduationCap } from "lucide-react";
 
 export default function LessonPlanGenerator() {
   const [formData, setFormData] = useState({
-    topic: "Ciclo da agua",
-    grade_level: "1° ano",
-    subject: "Ciência",
-    learning_context: "Ao ar livre",
-    duration_minutes: 30,
+    topic: "",
+    grade_level: "",
+    subject: "",
+    learning_context: "",
+    duration_minutes: 50,
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -47,7 +47,7 @@ export default function LessonPlanGenerator() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "duration_minutes" ? parseInt(value) : value,
+      [name]: name === "duration_minutes" ? parseInt(value) || 0 : value,
     }));
   };
 
@@ -55,52 +55,53 @@ export default function LessonPlanGenerator() {
     e.preventDefault();
     setIsGenerating(true);
 
+    document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+
     try {
-      // 1. O formulário chama a *SUA* API interna do Next.js
-      const response = await fetch(
-        "http://127.0.0.1:54321/functions/v1/generate_lesson_plans",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey:
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNreHd6dnhjaWJ0bXp6eWVjemxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5Njg0OTYsImV4cCI6MjA3NjU0NDQ5Nn0.bQcQdrpoiX7dH_Jan1fMbGnMHLnBdg786sDNY-CitPQ",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjU0MzIxL2F1dGgvdjEiLCJzdWIiOiI5MDg2NmM5Yy0wN2MyLTQ2MmYtYjk0Yy1iN2QyODQ0OTllYzIiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYxMDIyOTg1LCJpYXQiOjE3NjEwMTkzODUsImVtYWlsIjoiamFkc29uMjAwNTE5NjVAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImphZHNvbjIwMDUxOTY1QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6IjkwODY2YzljLTA3YzItNDYyZi1iOTRjLWI3ZDI4NDQ5OWVjMiJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzYxMDE5Mzg1fV0sInNlc3Npb25faWQiOiJkYmU2OTczYS0wOTM0LTRiN2QtODY5Yy0yYTMzMDhkNjRkOGYiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.TMsogFPIil2ll7FT81yFkZiNOw8tSkqqLnQVZT-6gwk",
+      // Simulação de resposta para demonstração
+      // Substitua isso pela sua chamada real à API
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      setGeneratedPlan({
+        ludic_introduction:
+          "Uma introdução lúdica e envolvente sobre o tema escolhido, conectando com a realidade dos alunos.",
+        bncc_goal:
+          "Objetivo alinhado com a BNCC para a série e disciplina selecionadas.",
+        step_by_step: [
+          {
+            etapa: "Aquecimento",
+            tempo: "10 min",
+            descricao: "Atividade inicial para engajar os alunos no tema.",
           },
-          body: JSON.stringify(formData),
+          {
+            etapa: "Desenvolvimento",
+            tempo: "25 min",
+            descricao: "Exploração prática e teórica do conteúdo principal.",
+          },
+          {
+            etapa: "Fechamento",
+            tempo: "15 min",
+            descricao: "Consolidação do aprendizado e avaliação.",
+          },
+        ],
+        rubric_evaluation: {
+          excelente: "Demonstra completo domínio do conteúdo",
+          bom: "Compreende os conceitos principais",
+          satisfatorio: "Compreensão básica do conteúdo",
+          em_desenvolvimento: "Necessita de apoio adicional",
         },
-      );
-
-      const result = await response.json();
-      const {
-        introducao_ludica,
-        objetivo_bncc,
-        passo_a_passo,
-        rubrica_avaliacao,
-      } = result[0];
-
-      console.log(result[0]);
-
-      if (response.ok) {
-        setGeneratedPlan({
-          introducao_ludica,
-          objetivo_bncc,
-          passo_a_passo: [passo_a_passo],
-          rubrica_avaliacao,
-        });
-      }
+      });
     } catch (error) {
-      console.error("Erro ao enviar formulário:", error);
+      console.error("Erro ao gerar plano:", error);
+      alert("Erro ao gerar o plano de aula. Tente novamente.");
+    } finally {
+      setIsGenerating(false);
     }
-
-    setIsGenerating(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-10">
           <div className="flex items-center justify-center mb-4">
             <Sparkles className="w-10 h-10 text-purple-600 mr-2" />
@@ -113,10 +114,11 @@ export default function LessonPlanGenerator() {
           </p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl shadow-xl p-8 mb-8"
+        >
           <div className="space-y-6">
-            {/* Topic */}
             <div className="text-gray-700">
               <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                 <BookOpen className="w-4 h-4 mr-2 text-purple-600" />
@@ -133,7 +135,6 @@ export default function LessonPlanGenerator() {
               />
             </div>
 
-            {/* Grade Level and Subject */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="text-gray-700">
                 <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
@@ -177,7 +178,6 @@ export default function LessonPlanGenerator() {
               </div>
             </div>
 
-            {/* Duration */}
             <div className="text-gray-700">
               <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                 <Clock className="w-4 h-4 mr-2 text-purple-600" />
@@ -195,7 +195,6 @@ export default function LessonPlanGenerator() {
               />
             </div>
 
-            {/* Learning Context */}
             <div className="text-gray-700">
               <label className="text-sm font-semibold text-gray-700 mb-2 block">
                 Contexto de Aprendizagem (opcional)
@@ -204,15 +203,14 @@ export default function LessonPlanGenerator() {
                 name="learning_context"
                 value={formData.learning_context}
                 onChange={handleChange}
-                rows="4"
+                rows={4}
                 placeholder="Descreva o perfil da turma, conhecimentos prévios, recursos disponíveis, necessidades especiais..."
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition resize-none"
               />
             </div>
 
-            {/* Submit Button */}
             <button
-              onClick={handleSubmit}
+              type="submit"
               disabled={isGenerating}
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center"
             >
@@ -229,38 +227,36 @@ export default function LessonPlanGenerator() {
               )}
             </button>
           </div>
-        </div>
+        </form>
 
-        {/* Generated Plan */}
         {generatedPlan && (
           <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
             <h2 className="text-2xl font-bold text-gray-800 border-b pb-4">
               Plano de Aula Gerado
             </h2>
 
-            {/* Introdução Lúdica */}
             <div className="bg-purple-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-purple-800 mb-3">
                 🎭 Introdução Lúdica
               </h3>
-              <p className="text-gray-700">{generatedPlan.introducao_ludica}</p>
+              <p className="text-gray-700">
+                {generatedPlan.ludic_introduction}
+              </p>
             </div>
 
-            {/* Objetivo BNCC */}
             <div className="bg-blue-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-blue-800 mb-3">
                 🎯 Objetivo de Aprendizagem (BNCC)
               </h3>
-              <p className="text-gray-700">{generatedPlan.objetivo_bncc}</p>
+              <p className="text-gray-700">{generatedPlan.bncc_goal}</p>
             </div>
 
-            {/* Passo a Passo */}
             <div className="bg-green-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-green-800 mb-4">
                 📋 Passo a Passo da Atividade
               </h3>
               <div className="space-y-4">
-                {generatedPlan.passo_a_passo.map((step, index) => (
+                {generatedPlan.step_by_step.map((step, index) => (
                   <div
                     key={index}
                     className="bg-white rounded-lg p-4 border-l-4 border-green-500"
@@ -279,13 +275,12 @@ export default function LessonPlanGenerator() {
               </div>
             </div>
 
-            {/* Rubrica de Avaliação */}
             <div className="bg-orange-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-orange-800 mb-4">
                 ⭐ Rubrica de Avaliação
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
-                {Object.entries(generatedPlan.rubrica_avaliacao).map(
+                {Object.entries(generatedPlan.rubric_evaluation).map(
                   ([nivel, descricao]) => (
                     <div
                       key={nivel}
@@ -301,7 +296,6 @@ export default function LessonPlanGenerator() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-4 pt-4">
               <button className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
                 💾 Salvar Plano

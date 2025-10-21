@@ -6,11 +6,12 @@ import { Eye, EyeOff, Mail, Lock, UserPlus, User } from "lucide-react";
 import { supabase } from "../../services/supabase/Client"; // Ajuste o caminho se necessário
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signup } from "@/api/auth";
 
 // 2. MUDANÇA: Renomeei o componente
 export default function SignUpPage() {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = React.useState("jadson20051965@gmail.com");
+  const [password, setPassword] = React.useState("admin123");
   const [showPassword, setShowPassword] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -28,19 +29,24 @@ export default function SignUpPage() {
     setError(null); // Limpa erros anteriores
     setSuccessMessage(null); // Limpa sucesso anterior
 
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      // Você pode adicionar mais opções aqui, como 'data' para nome, etc.
-      // options: {
-      //   data: {
-      //     first_name: 'John',
-      //   }
-      // }
-    });
-
     setIsLoading(false);
 
+    try {
+      // 2. Usa a função limpa da API
+      const data = await signup(email, password);
+
+      setSuccessMessage(
+        "Cadastro realizado! Por favor, verifique seu email para confirmar sua conta.",
+      );
+      // Limpa o formulário
+      setEmail("");
+      setPassword("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+    /*
     if (error) {
       // 5. MUDANÇA: Atualizei as mensagens de erro comuns do cadastro
       if (error.message.includes("User already registered")) {
@@ -70,6 +76,7 @@ export default function SignUpPage() {
         router.push("/dashboard");
       }
     }
+      */
   };
 
   return (
