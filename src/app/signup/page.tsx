@@ -1,105 +1,95 @@
 "use client";
 
-import React from "react";
-// 1. MUDANÇA: Importei o UserPlus para o ícone
-import { Eye, EyeOff, Mail, Lock, UserPlus, User } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import React, { useState, FormEvent } from "react";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { signup } from "@/api/auth";
 
-// 2. MUDANÇA: Renomeei o componente
 export default function SignUpPage() {
-  const [email, setEmail] = React.useState("jadson20051965@gmail.com");
-  const [password, setPassword] = React.useState("admin123");
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  // 3. MUDANÇA: Adicionei estado para mensagem de sucesso (confirmação de email)
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(
-    null,
-  );
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
 
-  const router = useRouter();
+  const validateForm = (): boolean => {
+    const errors: { email?: string; password?: string } = {};
+    let isValid = true;
 
-  // 4. MUDANÇA: Atualizei a função handleSubmit para 'signUp'
-  const handleSubmit = async (e: React.FormEvent) => {
+    if (!email.trim()) {
+      errors.email = "O campo de email é obrigatório.";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "O formato do email é inválido.";
+      isValid = false;
+    }
+
+    if (!password) {
+      errors.password = "O campo de senha é obrigatório.";
+      isValid = false;
+    } else if (password.length < 6) {
+      errors.password = "A senha deve ter pelo menos 6 caracteres.";
+      isValid = false;
+    }
+
+    setValidationErrors(errors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null); // Limpa erros anteriores
-    setSuccessMessage(null); // Limpa sucesso anterior
+    setApiError(null);
+    setSuccessMessage(null);
 
-    setIsLoading(false);
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
-      // 2. Usa a função limpa da API
-      const data = await signup(email, password);
-
+      await signup(email, password);
       setSuccessMessage(
         "Cadastro realizado! Por favor, verifique seu email para confirmar sua conta.",
       );
-      // Limpa o formulário
       setEmail("");
       setPassword("");
-    } catch (err) {
-      setError(err.message);
+      setValidationErrors({});
+    } catch (err: any) {
+      setApiError(
+        err.message ||
+          "Não foi possível realizar o cadastro. Tente novamente mais tarde.",
+      );
     } finally {
       setIsLoading(false);
     }
-    /*
-    if (error) {
-      // 5. MUDANÇA: Atualizei as mensagens de erro comuns do cadastro
-      if (error.message.includes("User already registered")) {
-        setError("Este email já está em uso.");
-      } else if (
-        error.message.includes("Password should be at least 6 characters")
-      ) {
-        setError("A senha deve ter pelo menos 6 caracteres.");
-      } else {
-        setError(error.message);
-      }
-    } else {
-      // 6. MUDANÇA: Lógica de sucesso
-      // Por padrão, o Supabase envia um email de confirmação.
-      // data.session será null se a confirmação for necessária.
-      if (data.session === null) {
-        setSuccessMessage(
-          "Cadastro realizado! Por favor, verifique seu email para confirmar sua conta.",
-        );
-        // Limpa o formulário
-        setEmail("");
-        setPassword("");
-      } else {
-        // Se a confirmação de email estiver DESATIVADA no Supabase,
-        // o usuário já estará logado (data.session não será null).
-        console.log("Cadastro e login bem-sucedidos!", data.user);
-        router.push("/dashboard");
-      }
-    }
-      */
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 font-sans">
       <div className="w-full max-w-md">
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-2xl shadow-xl p-8"
+          noValidate
         >
           <div className="text-center mb-8">
-            {/* 7. MUDANÇA: Ícone e textos do cabeçalho */}
             <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
               <User className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Crie sua conta
+              Crie sua Conta
             </h1>
             <p className="text-gray-600">
               Preencha os dados para se cadastrar gratuitamente.
             </p>
           </div>
 
-          <div className="space-y-6">
-            {/* Input de Email (sem alteração) */}
+          <div className="space-y-4">
             <div>
               <label
                 htmlFor="email"
@@ -108,20 +98,29 @@ export default function SignUpPage() {
                 Email
               </label>
               <div className="relative text-gray-700">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition"
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${
+                    validationErrors.email
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-indigo-600"
+                  }`}
                   required
+                  aria-invalid={!!validationErrors.email}
                 />
               </div>
+              {validationErrors.email && (
+                <p className="mt-1 text-xs text-red-600">
+                  {validationErrors.email}
+                </p>
+              )}
             </div>
 
-            {/* Input de Senha (sem alteração) */}
             <div>
               <label
                 htmlFor="password"
@@ -130,20 +129,26 @@ export default function SignUpPage() {
                 Senha
               </label>
               <div className="relative text-gray-700">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition"
+                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition ${
+                    validationErrors.password
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-indigo-600"
+                  }`}
                   required
+                  aria-invalid={!!validationErrors.password}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition cursor-pointer"
+                  aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -152,31 +157,32 @@ export default function SignUpPage() {
                   )}
                 </button>
               </div>
+              {validationErrors.password && (
+                <p className="mt-1 text-xs text-red-600">
+                  {validationErrors.password}
+                </p>
+              )}
             </div>
 
-            {/* 8. MUDANÇA: Adiciona o bloco de mensagem de SUCESSO */}
             {successMessage && (
               <div className="text-center text-sm text-green-700 bg-green-100 border border-green-300 rounded-lg p-3">
                 {successMessage}
               </div>
             )}
 
-            {/* Bloco de ERRO (só mostra se não houver msg de sucesso) */}
-            {error && !successMessage && (
+            {apiError && !successMessage && (
               <div className="text-center text-sm text-red-600 bg-red-100 border border-red-300 rounded-lg p-3">
-                {error}
+                {apiError}
               </div>
             )}
 
             <button
               type="submit"
-              // 9. MUDANÇA: Desabilita também se o sucesso foi mostrado
               disabled={isLoading || successMessage !== null}
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full bg-indigo-600 text-white py-3 mt-4 rounded-lg font-semibold hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
             >
-              {/* 10. MUDANÇA: Textos do botão */}
               {isLoading ? (
-                <span className="flex items-center justify-center">
+                <>
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -198,22 +204,21 @@ export default function SignUpPage() {
                     ></path>
                   </svg>
                   Cadastrando...
-                </span>
+                </>
               ) : (
                 "Cadastrar"
               )}
             </button>
           </div>
 
-          {/* 11. MUDANÇA: Link inferior para a página de Login */}
           <p className="mt-8 text-center text-sm text-gray-600">
             Já tem uma conta?{" "}
-            <Link
+            <a
               href="/login"
               className="text-indigo-600 hover:text-indigo-700 font-medium"
             >
               Entre aqui
-            </Link>
+            </a>
           </p>
         </form>
       </div>

@@ -2,7 +2,7 @@ import {
   LessonPlanRequest,
   LessonPlanResponse,
 } from "@/types/ILessonPlanResponse";
-import { getCookie } from "@/utils/getCookie";
+import { getCookie } from "@/utils/config";
 
 const API_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const API_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -31,13 +31,13 @@ export const generateLessonPlan = async (
       if (errorData.message == "JWT expired") {
         window.location.href = "/login";
       }
-      throw new Error(errorData.message || "Falha no generate lesson plan.");
+      throw new Error(errorData.message || "Failed to generate lesson plan.");
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Erro detalhado no serviço de generate lesson plan:", error);
+    console.error("Detailed error in generate lesson plan service:", error);
     throw error;
   }
 };
@@ -59,13 +59,13 @@ export const getLessonPlans = async () => {
         window.location.href = "/login";
         return;
       }
-      throw new Error(errorData.message || "Falha no get lesson plans.");
+      throw new Error(errorData.message || "Failed to get lesson plans.");
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Erro detalhado no serviço de signup:", error);
+    console.error("Detailed error in get lesson plans service:", error);
     throw error;
   }
 };

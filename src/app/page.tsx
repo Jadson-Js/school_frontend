@@ -2,9 +2,37 @@
 
 import React, { useState } from "react";
 import { BookOpen, Sparkles, Clock, GraduationCap } from "lucide-react";
-import { generateLessonPlan, getLessonPlans } from "@/api/lessonPlan";
+import { generateLessonPlan } from "@/api/lessonPlan";
 import { LessonPlanRequest } from "@/types/ILessonPlanResponse";
 import LessonPlanCard from "@/components/Cards";
+
+const gradeLevels = [
+  "Educação Infantil",
+  "1º ano",
+  "2º ano",
+  "3º ano",
+  "4º ano",
+  "5º ano",
+  "6º ano",
+  "7º ano",
+  "8º ano",
+  "9º ano",
+  "1º ano EM",
+  "2º ano EM",
+  "3º ano EM",
+];
+
+const subjects = [
+  "Língua Portuguesa",
+  "Matemática",
+  "Ciências",
+  "História",
+  "Geografia",
+  "Arte",
+  "Educação Física",
+  "Inglês",
+  "Ensino Religioso",
+];
 
 export default function LessonPlanGenerator() {
   const [formData, setFormData] = useState<LessonPlanRequest>({
@@ -17,35 +45,11 @@ export default function LessonPlanGenerator() {
 
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const gradeLevels = [
-    "Educação Infantil",
-    "1º ano",
-    "2º ano",
-    "3º ano",
-    "4º ano",
-    "5º ano",
-    "6º ano",
-    "7º ano",
-    "8º ano",
-    "9º ano",
-    "1º ano EM",
-    "2º ano EM",
-    "3º ano EM",
-  ];
-
-  const subjects = [
-    "Língua Portuguesa",
-    "Matemática",
-    "Ciências",
-    "História",
-    "Geografia",
-    "Arte",
-    "Educação Física",
-    "Inglês",
-    "Ensino Religioso",
-  ];
-
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -53,15 +57,12 @@ export default function LessonPlanGenerator() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsGenerating(true);
 
-    // document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-
     try {
       await generateLessonPlan(formData);
-
       window.location.reload();
     } catch (error) {
       console.error("Erro ao gerar plano:", error);

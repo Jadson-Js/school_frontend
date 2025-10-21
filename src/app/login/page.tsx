@@ -1,20 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-// 1. Importe o seu cliente Supabase
-import { useRouter } from "next/navigation"; // (Se estiver usando Next.js 13+ App Router)
-import Link from "next/link";
 import { login } from "@/api/auth";
 
 export default function LoginPage() {
-  const [email, setEmail] = React.useState("jadson20051965@gmail.com");
-  const [password, setPassword] = React.useState("admin123");
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  // 2. Adicione um estado para erros
-  const [error, setError] = React.useState<string | null>(null);
-  const router = useRouter();
+  const [email, setEmail] = useState("jadson20051965@gmail.com");
+  const [password, setPassword] = useState("admin123");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -22,13 +17,10 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // 2. Usa a função limpa da API
       const data = await login(email, password);
-
-      // 3. Sucesso!
       console.log("Login bem-sucedido!", data);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Ocorreu um erro desconhecido.");
     } finally {
       setIsLoading(false);
     }
@@ -37,26 +29,21 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-md">
-        {/* 6. (MUITO RECOMENDADO) Troque a <div> por <form> e use onSubmit */}
         <form
           onSubmit={handleSubmit}
           className="bg-white rounded-2xl shadow-xl p-8"
         >
           <div className="text-center mb-8">
-            {/* ... (o resto do seu JSX de cabeçalho) ... */}
             <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
               <User className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Bem-vindo de volta
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">LOGIN</h1>
             <p className="text-gray-600">
               Entre com suas credenciais para continuar
             </p>
           </div>
 
           <div className="space-y-6">
-            {/* ... (Input de Email) ... */}
             <div>
               <label
                 htmlFor="email"
@@ -73,12 +60,11 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition"
-                  required // Adiciona validação HTML
+                  required
                 />
               </div>
             </div>
 
-            {/* ... (Input de Senha) ... */}
             <div>
               <label
                 htmlFor="password"
@@ -95,10 +81,10 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition"
-                  required // Adiciona validação HTML
+                  required
                 />
                 <button
-                  type="button" // Importante: evita submeter o form
+                  type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition cursor-pointer"
                 >
@@ -111,7 +97,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* 7. Mostre o erro para o usuário */}
             {error && (
               <div className="text-center text-sm text-red-600 bg-red-100 border border-red-300 rounded-lg p-3">
                 {error}
@@ -119,11 +104,10 @@ export default function LoginPage() {
             )}
 
             <button
-              type="submit" // 8. Mude de onClick para type="submit"
+              type="submit"
               disabled={isLoading}
               className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {/* ... (Lógica do SVG de loading) ... */}
               {isLoading ? (
                 <span className="flex items-center justify-center">
                   <svg
@@ -156,12 +140,12 @@ export default function LoginPage() {
 
           <p className="mt-8 text-center text-sm text-gray-600">
             Não tem uma conta?{" "}
-            <Link
+            <a
               href="/signup"
               className="text-indigo-600 hover:text-indigo-700 font-medium"
             >
               Cadastre-se gratuitamente
-            </Link>
+            </a>
           </p>
         </form>
       </div>
