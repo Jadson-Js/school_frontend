@@ -34,20 +34,6 @@ Você pode testar a aplicação ao vivo e navegar pelos repositórios e pelo pro
 
 ---
 
-#### Telas Principais
-
-Aqui estão os componentes visuais chave da aplicação, desde a autenticação até o dashboard principal.
-
-|           Autenticação (Login)            |            Autenticação (Cadastro)            |             Dashboard Principal              |
-| :---------------------------------------: | :-------------------------------------------: | :------------------------------------------: |
-| ![Tela de Login](./docs/images/login.png) | ![Tela de Cadastro](./docs/images/signup.png) | ![Tela da Dashboard](./docs/images/home.png) |
-
-|                   Plano de aula                   |                   Plano de aula                   |                   Plano de aula                   |
-| :-----------------------------------------------: | :-----------------------------------------------: | :-----------------------------------------------: |
-| ![Tela de plano de aula](./docs/images/plan1.png) | ![Tela de plano de aula](./docs/images/plan2.png) | ![Tela de plano de aula](./docs/images/plan3.png) |
-
----
-
 #### Resultado Final (Plano de Aula)
 
 O plano de aula completo é exibido em um formato limpo após o processamento da IA, pronto para o professor utilizar.
