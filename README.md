@@ -24,16 +24,6 @@ Você pode testar a aplicação ao vivo e navegar pelos repositórios e pelo pro
 
 ---
 
-### 🖼️ Demonstração Visual
-
-#### Fluxo Completo de Uso
-
-(Um GIF demonstrando todo o processo: login, preenchimento do formulário, estado de carregamento e visualização do resultado.)
-
-![Fluxo Completo da Aplicação](./docs/images/SEU_GIF_DE_FLUXO_COMPLETO.gif)
-
----
-
 #### Resultado Final (Plano de Aula)
 
 O plano de aula completo é exibido em um formato limpo após o processamento da IA, pronto para o professor utilizar.
